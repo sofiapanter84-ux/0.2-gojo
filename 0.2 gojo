@@ -1,0 +1,162 @@
+-- =================================================================
+-- JJS: The Honored (0.2 Domain Farm) - Delta Optimized
+-- =================================================================
+
+local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
+local RunService = game:GetService("RunService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local LocalPlayer = Players.LocalPlayer
+
+-- Asegurar que se renderice por encima de todo (incluso menú de pausa)
+local protectGui = gethui or function(v) return v end
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "JJS_02_Farm_GUI"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.DisplayOrder = 999999999
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+pcall(function()
+    ScreenGui.Parent = protectGui(CoreGui)
+end)
+if not ScreenGui.Parent then
+    ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+end
+
+-- =================================================================
+-- CREACIÓN DE LA INTERFAZ (GUI PRINCIPAL)
+-- =================================================================
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 260, 0, 150)
+MainFrame.Position = UDim2.new(0.5, -130, 0.5, -75)
+MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true -- Soporte nativo de arrastre
+MainFrame.Parent = ScreenGui
+
+local UICornerMain = Instance.new("UICorner")
+UICornerMain.CornerRadius = UDim.new(0, 10)
+UICornerMain.Parent = MainFrame
+
+local UIStrokeMain = Instance.new("UIStroke")
+UIStrokeMain.Color = Color3.fromRGB(120, 80, 255)
+UIStrokeMain.Thickness = 2
+UIStrokeMain.Parent = MainFrame
+
+-- Título
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -40, 0, 35)
+Title.Position = UDim2.new(0, 10, 0, 5)
+Title.BackgroundTransparency = 1
+Title.Text = "JJS | 0.2 FARM"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 16
+Title.Font = Enum.Font.GothamBold
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = MainFrame
+
+-- Botón X (Minimizar)
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0, 30, 0, 30)
+CloseBtn.Position = UDim2.new(1, -35, 0, 7)
+CloseBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+CloseBtn.Text = "X"
+CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseBtn.TextSize = 14
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.Parent = MainFrame
+
+local UICornerClose = Instance.new("UICorner")
+UICornerClose.CornerRadius = UDim.new(0, 6)
+UICornerClose.Parent = CloseBtn
+
+-- Círculo Flotante (Oculto inicialmente)
+local FloatCircle = Instance.new("TextButton")
+FloatCircle.Name = "FloatCircle"
+FloatCircle.Size = UDim2.new(0, 50, 0, 50)
+FloatCircle.Position = UDim2.new(0, 50, 0, 50)
+FloatCircle.BackgroundColor3 = Color3.fromRGB(120, 80, 255)
+FloatCircle.Text = "0.2"
+FloatCircle.TextColor3 = Color3.fromRGB(255, 255, 255)
+FloatCircle.TextSize = 14
+FloatCircle.Font = Enum.Font.GothamBold
+FloatCircle.Visible = false
+FloatCircle.Active = true
+FloatCircle.Draggable = true
+FloatCircle.Parent = ScreenGui
+
+local UICornerCircle = Instance.new("UICorner")
+UICornerCircle.CornerRadius = UDim.new(1, 0) -- Círculo perfecto
+UICornerCircle.Parent = FloatCircle
+
+-- Lógica de Minimizar / Restaurar
+CloseBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+    FloatCircle.Visible = true
+end)
+
+FloatCircle.MouseButton1Click:Connect(function()
+    FloatCircle.Visible = false
+    MainFrame.Visible = true
+end)
+
+-- =================================================================
+-- BOTÓN 0.2 FARM (LÓGICA JJS: THE HONORED)
+-- =================================================================
+local FarmBtn = Instance.new("TextButton")
+FarmBtn.Size = UDim2.new(1, -20, 0, 50)
+FarmBtn.Position = UDim2.new(0, 10, 0, 65)
+FarmBtn.BackgroundColor3 = Color3.fromRGB(80, 40, 200)
+FarmBtn.Text = "0.2 FARM (G + R)"
+FarmBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+FarmBtn.TextSize = 16
+FarmBtn.Font = Enum.Font.GothamBold
+FarmBtn.Parent = MainFrame
+
+local UICornerFarm = Instance.new("UICorner")
+UICornerFarm.CornerRadius = UDim.new(0, 8)
+UICornerFarm.Parent = FarmBtn
+
+local farming = false
+
+FarmBtn.MouseButton1Click:Connect(function()
+    if farming then return end
+    farming = true
+    FarmBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+    FarmBtn.Text = "FARMING ACTIVO..."
+
+    task.spawn(function()
+        -- 1. Activar simultáneamente Ulti (G) y Habilidad Especial (R)
+        pcall(function()
+            VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.G, false, game)
+            VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.R, false, game)
+            task.wait(0.05)
+            VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.G, false, game)
+            VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.R, false, game)
+        end)
+
+        task.wait(0.3) -- Esperar a que se despliegue la expansión de dominio / estado
+
+        -- 2. Bucle de teletransporte rápido a todos los jugadores del servidor
+        local startTime = tick()
+        while tick() - startTime < 4.5 do -- Duración estimada del combo/dominio
+            local char = LocalPlayer.Character
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                for _, player in ipairs(Players:GetPlayers()) do
+                    if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                        local targetHRP = player.Character.HumanoidRootPart
+                        -- Teletransporte directo e instantáneo a la posición del enemigo para aplicar daño en área
+                        char.HumanoidRootPart.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 2)
+                        task.wait(0.04) -- Velocidad de salto entre jugadores
+                    end
+                end
+            end
+            task.wait(0.05)
+        end
+
+        farming = false
+        FarmBtn.BackgroundColor3 = Color3.fromRGB(80, 40, 200)
+        FarmBtn.Text = "0.2 FARM (G + R)"
+    end)
+end)
