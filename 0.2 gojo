@@ -1,5 +1,5 @@
 -- =================================================================
--- JJS: The Honored (0.2 Domain Farm) - Fully Fixed & Optimized
+-- JJS: The Honored (0.2 Domain Farm) - Fully Fixed & Damage Enabled
 -- =================================================================
 
 local Players = game:GetService("Players")
@@ -155,7 +155,7 @@ local InfoLabel = Instance.new("TextLabel")
 InfoLabel.Size = UDim2.new(1, -24, 0, 25)
 InfoLabel.Position = UDim2.new(0, 12, 0, 120)
 InfoLabel.BackgroundTransparency = 1
-InfoLabel.Text = "Afecta a jugadores y dummys cercanos"
+InfoLabel.Text = "Afecta a jugadores y dummys con daño real"
 InfoLabel.TextColor3 = Color3.fromRGB(170, 170, 190)
 InfoLabel.TextSize = 11
 InfoLabel.Font = Enum.Font.Gotham
@@ -163,7 +163,7 @@ InfoLabel.TextXAlignment = Enum.TextXAlignment.Center
 InfoLabel.Parent = MainFrame
 
 -- =================================================================
--- LÓGICA DE TELETRANSPORTE Y DAÑO REPARADA PARA DELTA
+-- LÓGICA DE TELETRANSPORTE Y DAÑO REAL PARA DELTA
 -- =================================================================
 local farming = false
 
@@ -199,11 +199,11 @@ FarmBtn.MouseButton1Click:Connect(function()
     if farming then return end
     farming = true
     FarmBtn.BackgroundColor3 = Color3.fromRGB(40, 160, 80)
-    FarmBtn.Text = "EJECUTANDO 0.2..."
+    FarmBtn.Text = "EJECUTANDO 0.2 CON ATAQUE..."
 
     task.spawn(function()
         pcall(function()
-            -- Forzar activación simultánea limpia de G y R
+            -- Forzar activación simultánea limpia de G (Ulti) y R (Especial)
             VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.G, false, game)
             VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.R, false, game)
             task.wait(0.05)
@@ -211,9 +211,9 @@ FarmBtn.MouseButton1Click:Connect(function()
             VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.R, false, game)
         end)
 
-        task.wait(0.2) -- Breve margen de despliegue
+        task.wait(0.25) -- Breve margen de despliegue
 
-        -- Bucle mejorado de persecución y daño continuo garantizado
+        -- Bucle mejorado de persecución, teletransporte y daño continuo
         local startTime = tick()
         while tick() - startTime < 5.0 do
             pcall(function()
@@ -225,13 +225,19 @@ FarmBtn.MouseButton1Click:Connect(function()
                     if #targets > 0 then
                         for _, targetHRP in ipairs(targets) do
                             if targetHRP and targetHRP.Parent then
-                                -- Forzar velocidad de desplazamiento instantánea para el registro de impacto del servidor
-                                hrpLocal.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 1.2)
+                                -- Teletransporte exacto al objetivo
+                                hrpLocal.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 1)
                                 
-                                -- Enviar pequeña simulación de salto/ataque para asegurar registro de daño continuo
-                                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.ButtonA, false, game)
+                                -- Activar herramienta equipada para forzar el impacto
+                                local tool = char:FindFirstChildOfClass("Tool")
+                                if tool then
+                                    pcall(function() tool:Activate() end)
+                                end
+                                
+                                -- Simular clic izquierdo del mouse para forzar el golpe físico del personaje
+                                VirtualInputManager:SendMouseButtonEvent(500, 500, 0, true, game, 0)
                                 task.wait(0.02)
-                                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.ButtonA, false, game)
+                                VirtualInputManager:SendMouseButtonEvent(500, 500, 0, false, game, 0)
                                 
                                 task.wait(0.03)
                             end
