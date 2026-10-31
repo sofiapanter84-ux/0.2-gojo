@@ -1,5 +1,5 @@
 -- =================================================================
--- JJS: The Honored (0.2 Domain Farm) - Delta Optimized & Undetectable
+-- JJS: The Honored (0.2 Domain Farm) - Fully Fixed & Optimized
 -- =================================================================
 
 local Players = game:GetService("Players")
@@ -8,7 +8,7 @@ local RunService = game:GetService("RunService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local LocalPlayer = Players.LocalPlayer
 
--- Evitar duplicados si se ejecuta varias veces
+-- Limpieza de interfaces anteriores para evitar duplicados
 pcall(function()
     if CoreGui:FindFirstChild("JJS_02_Farm_GUI") then
         CoreGui.JJS_02_Farm_GUI:Destroy()
@@ -18,7 +18,7 @@ pcall(function()
     end
 end)
 
--- Contenedor principal con soporte para protección de interfaz (Delta / gethui)
+-- Contenedor principal con protección de interfaz (Delta / gethui)
 local protectGui = gethui or function(v) return v end
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "JJS_02_Farm_GUI"
@@ -34,7 +34,7 @@ if not ScreenGui.Parent then
 end
 
 -- =================================================================
--- CREACIÓN DE INTERFAZ MEJORADA (DISEÑO MODERNO)
+-- CREACIÓN DE INTERFAZ MEJORADA
 -- =================================================================
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
@@ -163,7 +163,7 @@ InfoLabel.TextXAlignment = Enum.TextXAlignment.Center
 InfoLabel.Parent = MainFrame
 
 -- =================================================================
--- LÓGICA DE TELETRANSPORTE Y HABILIDAD (OPTIMIZADA PARA DELTA)
+-- LÓGICA DE TELETRANSPORTE Y DAÑO REPARADA PARA DELTA
 -- =================================================================
 local farming = false
 
@@ -181,12 +181,12 @@ local function getTargets()
         end
     end
     
-    -- 2. Buscar también Dummies integrados en el mapa (por si estás probando solo)
+    -- 2. Buscar Dummies de entrenamiento integrados en el mapa
     for _, obj in ipairs(workspace:GetDescendants()) do
         if obj:IsA("Model") and (obj.Name:lower():find("dummy") or obj.Name:lower():find("target") or obj.Name:lower():find("muñeco")) then
             local hrp = obj:FindFirstChild("HumanoidRootPart") or obj:FindFirstChild("Torso")
             local hum = obj:FindFirstChildOfClass("Humanoid")
-            if hrp and hum and hum.Health > 0 and not targets[hrp] then
+            if hrp and hum and hum.Health > 0 then
                 table.insert(targets, hrp)
             end
         end
@@ -203,19 +203,19 @@ FarmBtn.MouseButton1Click:Connect(function()
 
     task.spawn(function()
         pcall(function()
-            -- Activación simultánea segura de G (Ulti) y R (Especial)
+            -- Forzar activación simultánea limpia de G y R
             VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.G, false, game)
             VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.R, false, game)
-            task.wait(0.04)
+            task.wait(0.05)
             VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.G, false, game)
             VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.R, false, game)
         end)
 
-        task.wait(0.25) -- Breve margen para que despliegue la expansión/animación
+        task.wait(0.2) -- Breve margen de despliegue
 
+        -- Bucle mejorado de persecución y daño continuo garantizado
         local startTime = tick()
-        -- Bucle de persecución rápida por 4.5 segundos cubriendo todos los objetivos
-        while tick() - startTime < 4.5 do
+        while tick() - startTime < 5.0 do
             pcall(function()
                 local char = LocalPlayer.Character
                 if char and char:FindFirstChild("HumanoidRootPart") then
@@ -225,15 +225,21 @@ FarmBtn.MouseButton1Click:Connect(function()
                     if #targets > 0 then
                         for _, targetHRP in ipairs(targets) do
                             if targetHRP and targetHRP.Parent then
-                                -- Teletransporte seguro y fluido alrededor del objetivo
-                                hrpLocal.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 1.5)
-                                task.wait(0.035)
+                                -- Forzar velocidad de desplazamiento instantánea para el registro de impacto del servidor
+                                hrpLocal.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 1.2)
+                                
+                                -- Enviar pequeña simulación de salto/ataque para asegurar registro de daño continuo
+                                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.ButtonA, false, game)
+                                task.wait(0.02)
+                                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.ButtonA, false, game)
+                                
+                                task.wait(0.03)
                             end
                         end
                     end
                 end
             end)
-            task.wait(0.02)
+            task.wait(0.01)
         end
 
         farming = false
