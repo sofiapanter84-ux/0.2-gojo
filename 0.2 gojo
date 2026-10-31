@@ -1,5 +1,5 @@
 -- =================================================================
--- JJS: The Honored (0.2 Domain Farm) - Delta Optimized
+-- JJS: The Honored (0.2 Domain Farm) - Delta Optimized & Undetectable
 -- =================================================================
 
 local Players = game:GetService("Players")
@@ -8,13 +8,24 @@ local RunService = game:GetService("RunService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local LocalPlayer = Players.LocalPlayer
 
--- Asegurar que se renderice por encima de todo (incluso menú de pausa)
+-- Evitar duplicados si se ejecuta varias veces
+pcall(function()
+    if CoreGui:FindFirstChild("JJS_02_Farm_GUI") then
+        CoreGui.JJS_02_Farm_GUI:Destroy()
+    end
+    if LocalPlayer.PlayerGui:FindFirstChild("JJS_02_Farm_GUI") then
+        LocalPlayer.PlayerGui.JJS_02_Farm_GUI:Destroy()
+    end
+end)
+
+-- Contenedor principal con soporte para protección de interfaz (Delta / gethui)
 local protectGui = gethui or function(v) return v end
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "JJS_02_Farm_GUI"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.DisplayOrder = 999999999
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
 pcall(function()
     ScreenGui.Parent = protectGui(CoreGui)
 end)
@@ -23,60 +34,71 @@ if not ScreenGui.Parent then
 end
 
 -- =================================================================
--- CREACIÓN DE LA INTERFAZ (GUI PRINCIPAL)
+-- CREACIÓN DE INTERFAZ MEJORADA (DISEÑO MODERNO)
 -- =================================================================
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 260, 0, 150)
-MainFrame.Position = UDim2.new(0.5, -130, 0.5, -75)
-MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+MainFrame.Size = UDim2.new(0, 280, 0, 160)
+MainFrame.Position = UDim2.new(0.5, -140, 0.4, -80)
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
-MainFrame.Draggable = true -- Soporte nativo de arrastre
+MainFrame.Draggable = true
 MainFrame.Parent = ScreenGui
 
 local UICornerMain = Instance.new("UICorner")
-UICornerMain.CornerRadius = UDim.new(0, 10)
+UICornerMain.CornerRadius = UDim.new(0, 12)
 UICornerMain.Parent = MainFrame
 
 local UIStrokeMain = Instance.new("UIStroke")
-UIStrokeMain.Color = Color3.fromRGB(120, 80, 255)
+UIStrokeMain.Color = Color3.fromRGB(138, 43, 226)
 UIStrokeMain.Thickness = 2
 UIStrokeMain.Parent = MainFrame
 
+-- Barra superior decorativa
+local TopBar = Instance.new("Frame")
+TopBar.Size = UDim2.new(1, 0, 0, 35)
+TopBar.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+TopBar.BorderSizePixel = 0
+TopBar.Parent = MainFrame
+
+local UICornerTop = Instance.new("UICorner")
+UICornerTop.CornerRadius = UDim.new(0, 12)
+TopBar.Parent = MainFrame
+
 -- Título
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -40, 0, 35)
-Title.Position = UDim2.new(0, 10, 0, 5)
+Title.Size = UDim2.new(1, -50, 1, 0)
+Title.Position = UDim2.new(0, 12, 0, 0)
 Title.BackgroundTransparency = 1
-Title.Text = "JJS | 0.2 FARM"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 16
+Title.Text = "JJS | The Honored 0.2"
+Title.TextColor3 = Color3.fromRGB(230, 230, 255)
+Title.TextSize = 14
 Title.Font = Enum.Font.GothamBold
 Title.TextXAlignment = Enum.TextXAlignment.Left
-Title.Parent = MainFrame
+Title.Parent = TopBar
 
--- Botón X (Minimizar)
+-- Botón Cerrar / Minimizar (X)
 local CloseBtn = Instance.new("TextButton")
-CloseBtn.Size = UDim2.new(0, 30, 0, 30)
-CloseBtn.Position = UDim2.new(1, -35, 0, 7)
+CloseBtn.Size = UDim2.new(0, 26, 0, 26)
+CloseBtn.Position = UDim2.new(1, -32, 0.5, -13)
 CloseBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 CloseBtn.Text = "X"
 CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseBtn.TextSize = 14
+CloseBtn.TextSize = 12
 CloseBtn.Font = Enum.Font.GothamBold
-CloseBtn.Parent = MainFrame
+CloseBtn.Parent = TopBar
 
 local UICornerClose = Instance.new("UICorner")
 UICornerClose.CornerRadius = UDim.new(0, 6)
 UICornerClose.Parent = CloseBtn
 
--- Círculo Flotante (Oculto inicialmente)
+-- Círculo Flotante (Cuando se minimiza)
 local FloatCircle = Instance.new("TextButton")
 FloatCircle.Name = "FloatCircle"
-FloatCircle.Size = UDim2.new(0, 50, 0, 50)
-FloatCircle.Position = UDim2.new(0, 50, 0, 50)
-FloatCircle.BackgroundColor3 = Color3.fromRGB(120, 80, 255)
+FloatCircle.Size = UDim2.new(0, 48, 0, 48)
+FloatCircle.Position = UDim2.new(0, 40, 0, 40)
+FloatCircle.BackgroundColor3 = Color3.fromRGB(138, 43, 226)
 FloatCircle.Text = "0.2"
 FloatCircle.TextColor3 = Color3.fromRGB(255, 255, 255)
 FloatCircle.TextSize = 14
@@ -87,10 +109,15 @@ FloatCircle.Draggable = true
 FloatCircle.Parent = ScreenGui
 
 local UICornerCircle = Instance.new("UICorner")
-UICornerCircle.CornerRadius = UDim.new(1, 0) -- Círculo perfecto
+UICornerCircle.CornerRadius = UDim.new(1, 0)
 UICornerCircle.Parent = FloatCircle
 
--- Lógica de Minimizar / Restaurar
+local UIStrokeCircle = Instance.new("UIStroke")
+UIStrokeCircle.Color = Color3.fromRGB(255, 255, 255)
+UIStrokeCircle.Thickness = 1.5
+UIStrokeCircle.Parent = FloatCircle
+
+-- Acciones de minimizar/restaurar
 CloseBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = false
     FloatCircle.Visible = true
@@ -102,15 +129,15 @@ FloatCircle.MouseButton1Click:Connect(function()
 end)
 
 -- =================================================================
--- BOTÓN 0.2 FARM (LÓGICA JJS: THE HONORED)
+-- BOTÓN DE FARMEO PRINCIPAL
 -- =================================================================
 local FarmBtn = Instance.new("TextButton")
-FarmBtn.Size = UDim2.new(1, -20, 0, 50)
-FarmBtn.Position = UDim2.new(0, 10, 0, 65)
-FarmBtn.BackgroundColor3 = Color3.fromRGB(80, 40, 200)
-FarmBtn.Text = "0.2 FARM (G + R)"
+FarmBtn.Size = UDim2.new(1, -24, 0, 55)
+FarmBtn.Position = UDim2.new(0, 12, 0, 55)
+FarmBtn.BackgroundColor3 = Color3.fromRGB(90, 30, 200)
+FarmBtn.Text = "ACTIVAR 0.2 FARM (G + R)"
 FarmBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-FarmBtn.TextSize = 16
+FarmBtn.TextSize = 14
 FarmBtn.Font = Enum.Font.GothamBold
 FarmBtn.Parent = MainFrame
 
@@ -118,45 +145,99 @@ local UICornerFarm = Instance.new("UICorner")
 UICornerFarm.CornerRadius = UDim.new(0, 8)
 UICornerFarm.Parent = FarmBtn
 
+local UIStrokeFarm = Instance.new("UIStroke")
+UIStrokeFarm.Color = Color3.fromRGB(180, 100, 255)
+UIStrokeFarm.Thickness = 1.5
+UIStrokeFarm.Parent = FarmBtn
+
+-- Subtexto informativo
+local InfoLabel = Instance.new("TextLabel")
+InfoLabel.Size = UDim2.new(1, -24, 0, 25)
+InfoLabel.Position = UDim2.new(0, 12, 0, 120)
+InfoLabel.BackgroundTransparency = 1
+InfoLabel.Text = "Afecta a jugadores y dummys cercanos"
+InfoLabel.TextColor3 = Color3.fromRGB(170, 170, 190)
+InfoLabel.TextSize = 11
+InfoLabel.Font = Enum.Font.Gotham
+InfoLabel.TextXAlignment = Enum.TextXAlignment.Center
+InfoLabel.Parent = MainFrame
+
+-- =================================================================
+-- LÓGICA DE TELETRANSPORTE Y HABILIDAD (OPTIMIZADA PARA DELTA)
+-- =================================================================
 local farming = false
+
+local function getTargets()
+    local targets = {}
+    
+    -- 1. Buscar jugadores reales (excluyendo al usuario local)
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+            local hum = player.Character:FindFirstChildOfClass("Humanoid")
+            if hrp and hum and hum.Health > 0 then
+                table.insert(targets, hrp)
+            end
+        end
+    end
+    
+    -- 2. Buscar también Dummies integrados en el mapa (por si estás probando solo)
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj:IsA("Model") and (obj.Name:lower():find("dummy") or obj.Name:lower():find("target") or obj.Name:lower():find("muñeco")) then
+            local hrp = obj:FindFirstChild("HumanoidRootPart") or obj:FindFirstChild("Torso")
+            local hum = obj:FindFirstChildOfClass("Humanoid")
+            if hrp and hum and hum.Health > 0 and not targets[hrp] then
+                table.insert(targets, hrp)
+            end
+        end
+    end
+    
+    return targets
+end
 
 FarmBtn.MouseButton1Click:Connect(function()
     if farming then return end
     farming = true
-    FarmBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
-    FarmBtn.Text = "FARMING ACTIVO..."
+    FarmBtn.BackgroundColor3 = Color3.fromRGB(40, 160, 80)
+    FarmBtn.Text = "EJECUTANDO 0.2..."
 
     task.spawn(function()
-        -- 1. Activar simultáneamente Ulti (G) y Habilidad Especial (R)
         pcall(function()
+            -- Activación simultánea segura de G (Ulti) y R (Especial)
             VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.G, false, game)
             VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.R, false, game)
-            task.wait(0.05)
+            task.wait(0.04)
             VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.G, false, game)
             VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.R, false, game)
         end)
 
-        task.wait(0.3) -- Esperar a que se despliegue la expansión de dominio / estado
+        task.wait(0.25) -- Breve margen para que despliegue la expansión/animación
 
-        -- 2. Bucle de teletransporte rápido a todos los jugadores del servidor
         local startTime = tick()
-        while tick() - startTime < 4.5 do -- Duración estimada del combo/dominio
-            local char = LocalPlayer.Character
-            if char and char:FindFirstChild("HumanoidRootPart") then
-                for _, player in ipairs(Players:GetPlayers()) do
-                    if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                        local targetHRP = player.Character.HumanoidRootPart
-                        -- Teletransporte directo e instantáneo a la posición del enemigo para aplicar daño en área
-                        char.HumanoidRootPart.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 2)
-                        task.wait(0.04) -- Velocidad de salto entre jugadores
+        -- Bucle de persecución rápida por 4.5 segundos cubriendo todos los objetivos
+        while tick() - startTime < 4.5 do
+            pcall(function()
+                local char = LocalPlayer.Character
+                if char and char:FindFirstChild("HumanoidRootPart") then
+                    local hrpLocal = char.HumanoidRootPart
+                    local targets = getTargets()
+                    
+                    if #targets > 0 then
+                        for _, targetHRP in ipairs(targets) do
+                            if targetHRP and targetHRP.Parent then
+                                -- Teletransporte seguro y fluido alrededor del objetivo
+                                hrpLocal.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 1.5)
+                                task.wait(0.035)
+                            end
+                        end
                     end
                 end
-            end
-            task.wait(0.05)
+            end)
+            task.wait(0.02)
         end
 
         farming = false
-        FarmBtn.BackgroundColor3 = Color3.fromRGB(80, 40, 200)
-        FarmBtn.Text = "0.2 FARM (G + R)"
+        FarmBtn.BackgroundColor3 = Color3.fromRGB(90, 30, 200)
+        FarmBtn.Text = "ACTIVAR 0.2 FARM (G + R)"
     end)
 end)
