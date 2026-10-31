@@ -1,5 +1,5 @@
 -- =================================================================
--- JJS: The Honored (0.2 Domain Farm) - Fully Fixed & Damage Enabled
+-- JJS: The Honored (0.2 Domain Farm) - Final Fixed Version
 -- =================================================================
 
 local Players = game:GetService("Players")
@@ -163,7 +163,7 @@ InfoLabel.TextXAlignment = Enum.TextXAlignment.Center
 InfoLabel.Parent = MainFrame
 
 -- =================================================================
--- LÓGICA DE TELETRANSPORTE Y DAÑO REAL PARA DELTA
+-- LÓGICA DE TELETRANSPORTE Y DAÑO SINCRONIZADA
 -- =================================================================
 local farming = false
 
@@ -199,11 +199,11 @@ FarmBtn.MouseButton1Click:Connect(function()
     if farming then return end
     farming = true
     FarmBtn.BackgroundColor3 = Color3.fromRGB(40, 160, 80)
-    FarmBtn.Text = "EJECUTANDO 0.2 CON ATAQUE..."
+    FarmBtn.Text = "ESPERANDO CINEMÁTICA..."
 
     task.spawn(function()
         pcall(function()
-            -- Forzar activación simultánea limpia de G (Ulti) y R (Especial)
+            -- Activar G y R simultáneamente
             VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.G, false, game)
             VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.R, false, game)
             task.wait(0.05)
@@ -211,11 +211,14 @@ FarmBtn.MouseButton1Click:Connect(function()
             VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.R, false, game)
         end)
 
-        task.wait(0.25) -- Breve margen de despliegue
+        -- ESPERAR A QUE TERMINE LA CINEMÁTICA DEL DOMINIO (aprox. 2.2 segundos)
+        task.wait(2.2)
 
-        -- Bucle mejorado de persecución, teletransporte y daño continuo
+        FarmBtn.Text = "¡FARMING 0.2 ACTIVO!"
+
+        -- Bucle rápido de teletransporte y daño durante la fase activa del dominio
         local startTime = tick()
-        while tick() - startTime < 5.0 do
+        while tick() - startTime < 4.0 do
             pcall(function()
                 local char = LocalPlayer.Character
                 if char and char:FindFirstChild("HumanoidRootPart") then
@@ -225,21 +228,20 @@ FarmBtn.MouseButton1Click:Connect(function()
                     if #targets > 0 then
                         for _, targetHRP in ipairs(targets) do
                             if targetHRP and targetHRP.Parent then
-                                -- Teletransporte exacto al objetivo
+                                -- Teletransporte directo al objetivo
                                 hrpLocal.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 1)
                                 
-                                -- Activar herramienta equipada para forzar el impacto
+                                -- Activar herramienta y simular clic para hacer daño real
                                 local tool = char:FindFirstChildOfClass("Tool")
                                 if tool then
                                     pcall(function() tool:Activate() end)
                                 end
                                 
-                                -- Simular clic izquierdo del mouse para forzar el golpe físico del personaje
                                 VirtualInputManager:SendMouseButtonEvent(500, 500, 0, true, game, 0)
-                                task.wait(0.02)
+                                task.wait(0.01)
                                 VirtualInputManager:SendMouseButtonEvent(500, 500, 0, false, game, 0)
                                 
-                                task.wait(0.03)
+                                task.wait(0.02)
                             end
                         end
                     end
