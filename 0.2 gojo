@@ -1,5 +1,5 @@
 -- =================================================================
--- JJS: The Honored (0.2 Domain Farm) - Final Fixed Version
+-- JJS: The Honored (0.2 Domain Farm) - Ultimate Delta Edition
 -- =================================================================
 
 local Players = game:GetService("Players")
@@ -8,7 +8,7 @@ local RunService = game:GetService("RunService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local LocalPlayer = Players.LocalPlayer
 
--- Limpieza de interfaces anteriores para evitar duplicados
+-- Limpieza de interfaces previas para evitar duplicados
 pcall(function()
     if CoreGui:FindFirstChild("JJS_02_Farm_GUI") then
         CoreGui.JJS_02_Farm_GUI:Destroy()
@@ -34,7 +34,7 @@ if not ScreenGui.Parent then
 end
 
 -- =================================================================
--- CREACIÓN DE INTERFAZ MEJORADA
+-- CREACIÓN DE LA INTERFAZ FLOTANTE Y ARRASTRABLE
 -- =================================================================
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
@@ -55,7 +55,7 @@ UIStrokeMain.Color = Color3.fromRGB(138, 43, 226)
 UIStrokeMain.Thickness = 2
 UIStrokeMain.Parent = MainFrame
 
--- Barra superior decorativa
+-- Barra superior
 local TopBar = Instance.new("Frame")
 TopBar.Size = UDim2.new(1, 0, 0, 35)
 TopBar.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
@@ -78,7 +78,7 @@ Title.Font = Enum.Font.GothamBold
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = TopBar
 
--- Botón Cerrar / Minimizar (X)
+-- Botón Cerrar (X) que minimiza al círculo flotante
 local CloseBtn = Instance.new("TextButton")
 CloseBtn.Size = UDim2.new(0, 26, 0, 26)
 CloseBtn.Position = UDim2.new(1, -32, 0.5, -13)
@@ -93,7 +93,7 @@ local UICornerClose = Instance.new("UICorner")
 UICornerClose.CornerRadius = UDim.new(0, 6)
 UICornerClose.Parent = CloseBtn
 
--- Círculo Flotante (Cuando se minimiza)
+-- Círculo Flotante (Visible al minimizar, arrastrable)
 local FloatCircle = Instance.new("TextButton")
 FloatCircle.Name = "FloatCircle"
 FloatCircle.Size = UDim2.new(0, 48, 0, 48)
@@ -117,7 +117,7 @@ UIStrokeCircle.Color = Color3.fromRGB(255, 255, 255)
 UIStrokeCircle.Thickness = 1.5
 UIStrokeCircle.Parent = FloatCircle
 
--- Acciones de minimizar/restaurar
+-- Lógica de Minimizar y Restaurar
 CloseBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = false
     FloatCircle.Visible = true
@@ -129,15 +129,15 @@ FloatCircle.MouseButton1Click:Connect(function()
 end)
 
 -- =================================================================
--- BOTÓN DE FARMEO PRINCIPAL
+-- BOTÓN 0.2 FARM
 -- =================================================================
 local FarmBtn = Instance.new("TextButton")
 FarmBtn.Size = UDim2.new(1, -24, 0, 55)
 FarmBtn.Position = UDim2.new(0, 12, 0, 55)
 FarmBtn.BackgroundColor3 = Color3.fromRGB(90, 30, 200)
-FarmBtn.Text = "ACTIVAR 0.2 FARM (G + R)"
+FarmBtn.Text = "0.2 FARM"
 FarmBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-FarmBtn.TextSize = 14
+FarmBtn.TextSize = 16
 FarmBtn.Font = Enum.Font.GothamBold
 FarmBtn.Parent = MainFrame
 
@@ -155,7 +155,7 @@ local InfoLabel = Instance.new("TextLabel")
 InfoLabel.Size = UDim2.new(1, -24, 0, 25)
 InfoLabel.Position = UDim2.new(0, 12, 0, 120)
 InfoLabel.BackgroundTransparency = 1
-InfoLabel.Text = "Afecta a jugadores y dummys con daño real"
+InfoLabel.Text = "Teletransporte y daño masivo (G + R)"
 InfoLabel.TextColor3 = Color3.fromRGB(170, 170, 190)
 InfoLabel.TextSize = 11
 InfoLabel.Font = Enum.Font.Gotham
@@ -163,14 +163,14 @@ InfoLabel.TextXAlignment = Enum.TextXAlignment.Center
 InfoLabel.Parent = MainFrame
 
 -- =================================================================
--- LÓGICA DE TELETRANSPORTE Y DAÑO SINCRONIZADA
+-- LÓGICA DE DETECCIÓN Y COMBATE
 -- =================================================================
 local farming = false
 
 local function getTargets()
     local targets = {}
     
-    -- 1. Buscar jugadores reales (excluyendo al usuario local)
+    -- 1. Jugadores reales en el servidor
     for _, player in ipairs(Players:GetPlayers()) do
         if player ~= LocalPlayer and player.Character then
             local hrp = player.Character:FindFirstChild("HumanoidRootPart")
@@ -181,7 +181,7 @@ local function getTargets()
         end
     end
     
-    -- 2. Buscar Dummies de entrenamiento integrados en el mapa
+    -- 2. Dummies de entrenamiento del mapa
     for _, obj in ipairs(workspace:GetDescendants()) do
         if obj:IsA("Model") and (obj.Name:lower():find("dummy") or obj.Name:lower():find("target") or obj.Name:lower():find("muñeco")) then
             local hrp = obj:FindFirstChild("HumanoidRootPart") or obj:FindFirstChild("Torso")
@@ -199,26 +199,26 @@ FarmBtn.MouseButton1Click:Connect(function()
     if farming then return end
     farming = true
     FarmBtn.BackgroundColor3 = Color3.fromRGB(40, 160, 80)
-    FarmBtn.Text = "ESPERANDO CINEMÁTICA..."
+    FarmBtn.Text = "ABRIENDO DOMINIO..."
 
     task.spawn(function()
         pcall(function()
-            -- Activar G y R simultáneamente
+            -- Activación simultánea limpia de G (Ulti) y R (Especial)
             VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.G, false, game)
             VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.R, false, game)
-            task.wait(0.05)
+            task.wait(0.06)
             VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.G, false, game)
             VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.R, false, game)
         end)
 
-        -- ESPERAR A QUE TERMINE LA CINEMÁTICA DEL DOMINIO (aprox. 2.2 segundos)
-        task.wait(2.2)
+        -- Esperar a que la cinemática de la expansión de dominio termine por completo (~2.3 segundos)
+        task.wait(2.3)
 
-        FarmBtn.Text = "¡FARMING 0.2 ACTIVO!"
+        FarmBtn.Text = "¡MATANDO A TODOS!"
 
-        -- Bucle rápido de teletransporte y daño durante la fase activa del dominio
+        -- Bucle rápido de persecución, teletransporte y daño continuo durante el dominio
         local startTime = tick()
-        while tick() - startTime < 4.0 do
+        while tick() - startTime < 4.5 do
             pcall(function()
                 local char = LocalPlayer.Character
                 if char and char:FindFirstChild("HumanoidRootPart") then
@@ -228,15 +228,16 @@ FarmBtn.MouseButton1Click:Connect(function()
                     if #targets > 0 then
                         for _, targetHRP in ipairs(targets) do
                             if targetHRP and targetHRP.Parent then
-                                -- Teletransporte directo al objetivo
+                                -- Teletransporte instantáneo al objetivo
                                 hrpLocal.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 1)
                                 
-                                -- Activar herramienta y simular clic para hacer daño real
+                                -- Forzar activación de herramienta de combate
                                 local tool = char:FindFirstChildOfClass("Tool")
                                 if tool then
                                     pcall(function() tool:Activate() end)
                                 end
                                 
+                                -- Simulación de golpe físico
                                 VirtualInputManager:SendMouseButtonEvent(500, 500, 0, true, game, 0)
                                 task.wait(0.01)
                                 VirtualInputManager:SendMouseButtonEvent(500, 500, 0, false, game, 0)
@@ -252,6 +253,6 @@ FarmBtn.MouseButton1Click:Connect(function()
 
         farming = false
         FarmBtn.BackgroundColor3 = Color3.fromRGB(90, 30, 200)
-        FarmBtn.Text = "ACTIVAR 0.2 FARM (G + R)"
+        FarmBtn.Text = "0.2 FARM"
     end)
 end)
